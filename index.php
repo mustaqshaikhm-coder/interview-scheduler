@@ -347,7 +347,9 @@ $unread=isLoggedIn()&&!isAdmin()?countUnread($db,$_SESSION['user_id']):0;
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <title>Interview Scheduler</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;1,14..32,400&family=Syne:wght@700;800&display=swap" rel="stylesheet">
@@ -616,6 +618,40 @@ input[type=file]{display:none;}
 .cv-modal-body .cv-no-preview p{color:var(--muted);font-size:.9rem;line-height:1.6;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
 .fade-in{animation:fadeIn .3s ease both;}
+
+/* ── MOBILE RESPONSIVE ── */
+@media(max-width:600px){
+    .container{padding:16px 12px 60px;}
+    .container.wide{max-width:100%;}
+    .container.full{max-width:100%;}
+    .stats-row{grid-template-columns:repeat(2,1fr);}
+    .row-2{grid-template-columns:1fr;}
+    .nav{padding:0 14px;height:54px;}
+    .nav-links{gap:0;}
+    .nav-link{padding:5px 8px;font-size:.75rem;}
+    .nav-user{display:none;}
+    .nav-sep{display:none;}
+    .card{padding:16px 14px;}
+    .modal{border-radius:16px 16px 0 0;padding:18px 16px 32px;}
+    .week-nav{gap:4px;}
+    .day-tab{min-width:52px;padding:8px 10px;}
+    .slot-item{padding:11px 12px;}
+    .slot-time{font-size:.86rem;}
+    .job-grid{grid-template-columns:1fr;}
+    .job-card{padding:15px 14px;}
+    .admin-tabs{gap:0;}
+    .admin-tab{padding:9px 11px;font-size:.78rem;}
+    .stat-num{font-size:1.6rem;}
+    .section-title{font-size:1rem;}
+    .btn{padding:12px;}
+    .tracker-label{font-size:.58rem;}
+    .cv-modal{border-radius:14px 14px 0 0;max-height:95vh;}
+    .booking-hist{padding:14px 13px;}
+    .c-card{padding:14px 13px;}
+    .access-row{padding:10px 13px;}
+    .btn-sm{padding:5px 11px;font-size:.77rem;}
+    .login-logo h1{font-size:1.8rem;}
+}
 </style>
 </head>
 <body>
