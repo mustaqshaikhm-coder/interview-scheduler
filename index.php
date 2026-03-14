@@ -726,9 +726,15 @@ if($action==='login'||$action==='register'):
 <?php
 // ─── CLIENT DASHBOARD ────────────────────────────────────────────────────────
 elseif($action==='dashboard'||$action==='book'):
-  $activeDay=$_GET['day']??date('Y-m-d');
-  if(!in_array($activeDay,$weekDays))$activeDay=$weekDays[0];
   $today=date('Y-m-d');$now=date('H:i');
+  // Only show today or future days — skip past days
+  $futureDays=array_values(array_filter($weekDays,function($d)use($today){return $d>=$today;}));
+  $requestedDay=$_GET['day']??'';
+  if($requestedDay && in_array($requestedDay,$futureDays)){
+    $activeDay=$requestedDay;
+  } else {
+    $activeDay=!empty($futureDays)?$futureDays[0]:$today;
+  }
   $jobId=(int)($_GET['job_id']??0);$jobCtx=$jobId?getJob($db,$jobId):null;
   $allMyDash=getAllUserBookings($db,$_SESSION['user_id']);
 ?>
@@ -765,6 +771,7 @@ elseif($action==='dashboard'||$action==='book'):
   <div class="section-title mt-6"><span class="dot"></span> Available Slots – This Week</div>
   <div class="week-nav">
     <?php foreach($weekDays as $d):
+      if($d < $today) continue; // hide past days
       $cls=($d===$activeDay?'active ':''). ($d===$today?'today':'');
     ?>
     <a href="?action=dashboard&day=<?= $d ?><?= $jobId?"&job_id=$jobId":'' ?>" class="day-tab <?= $cls ?>">
@@ -786,10 +793,7 @@ elseif($action==='dashboard'||$action==='book'):
         <span class="slot-label taken">Booked</span>
       </div>
       <?php elseif($isPast): ?>
-      <div class="slot-item" style="opacity:.38;">
-        <div class="slot-time" style="color:var(--muted2);">🕙 <?= $sl['start'] ?> – <?= $sl['end'] ?></div>
-        <span class="slot-label past">Past</span>
-      </div>
+      <?php // past slots hidden completely — skip ?>
       <?php else: ?>
       <div class="slot-item available" onclick="openModal('<?= $activeDay ?>','<?= $sl['start'] ?>','<?= $sl['end'] ?>',<?= $jobId ?>)">
         <div>
@@ -1301,9 +1305,8 @@ document.addEventListener('keydown', function(e){ if(e.key==='Escape') closePrev
 <!-- ═══ BOTTOM NAV ═══ -->
 <style>
 #mn-ov{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.45);z-index:9998;}
-#mn-sh{position:fixed;bottom:66px;left:0;right:0;background:#ffffff;border-top-left-radius:20px;border-top-right-radius:20px;box-shadow:0 -4px 24px rgba(0,0,0,0.15);z-index:9999;transform:translateY(110%);transition:transform 0.28s ease;}
+#mn-sh{position:fixed;bottom:66px;left:0;right:0;background:#ffffff;border-top-left-radius:20px;border-top-right-radius:20px;box-shadow:0 -4px 24px rgba(0,0,0,0.15);z-index:9999;transform:translateY(200%);transition:transform 0.28s ease;}
 #mn-bar{width:40px;height:5px;background:#cbd5e1;border-radius:3px;margin:14px auto 10px auto;}
-#mn-lbl{font-size:11px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;padding:0 20px 10px 20px;}
 .mn-item{display:flex;align-items:center;gap:16px;padding:17px 22px;font-size:16px;font-weight:600;color:#334155;text-decoration:none;border-top:1px solid #e2e8f0;}
 .mn-item-ico{font-size:22px;width:32px;text-align:center;}
 .mn-item-lbl{flex:1;}
@@ -1325,7 +1328,6 @@ body{padding-bottom:66px !important;}
 <!-- slide up sheet -->
 <div id="mn-sh">
   <div id="mn-bar"></div>
-  <div id="mn-lbl">Navigate To</div>
   <a href="?action=dashboard" class="mn-item <?= in_array($action,['dashboard','book'])?'mn-on':'' ?>">
     <span class="mn-item-ico">📅</span><span class="mn-item-lbl">Schedule</span><span class="mn-item-arr">›</span>
   </a>
@@ -1364,7 +1366,7 @@ function mnOpen(){
 }
 function mnClose(){
   document.getElementById('mn-ov').style.display='none';
-  document.getElementById('mn-sh').style.transform='translateY(110%)';
+  document.getElementById('mn-sh').style.transform='translateY(200%)';
   document.body.style.overflow='';
 }
 </script>
