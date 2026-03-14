@@ -6,7 +6,7 @@ session_start();
 //     These users get admin role automatically on login.
 // ═══════════════════════════════════════════════════════════
 $ADMIN_EMAILS = [
-    'sarfaraf@gmail.com',   // ← replace with your own email(s)
+    'admin@yourdomain.com',   // ← replace with your own email(s)
 ];
 
 // ─── DATABASE ────────────────────────────────────────────────────────────────
@@ -101,7 +101,7 @@ function h($s)           { return htmlspecialchars($s ?? '', ENT_QUOTES, 'UTF-8'
 function getWeekDays() {
     $days=[]; $now=new DateTime(); $dow=(int)$now->format('N');
     $mon=clone $now; $mon->modify('-'.($dow-1).' days');
-    for($i=0;$i<5;$i++){$d=clone $mon;$d->modify("+$i days");$days[]=$d->format('Y-m-d');}
+    for($i=0;$i<6;$i++){$d=clone $mon;$d->modify("+$i days");$days[]=$d->format('Y-m-d');}
     return $days;
 }
 function getSlots() {
@@ -347,9 +347,7 @@ $unread=isLoggedIn()&&!isAdmin()?countUnread($db,$_SESSION['user_id']):0;
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
 <title>Interview Scheduler</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;1,14..32,400&family=Syne:wght@700;800&display=swap" rel="stylesheet">
@@ -385,6 +383,54 @@ a{color:var(--accent);text-decoration:none;}
 .nav-user strong{color:var(--text);font-size:.81rem;display:block;font-weight:700;}
 .badge-red{display:inline-flex;align-items:center;justify-content:center;min-width:17px;height:17px;
   background:var(--danger);color:#fff;font-size:.62rem;font-weight:800;border-radius:20px;padding:0 4px;margin-left:3px;}
+.nav-back-btn{width:32px;height:32px;border-radius:8px;border:1.5px solid var(--border);background:#f1f5f9;
+  color:var(--text2);font-size:1rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;
+  transition:all .15s;flex-shrink:0;line-height:1;}
+.nav-back-btn:hover{background:#e2e8f0;border-color:var(--border2);color:var(--accent);}
+
+/* ── BOTTOM NAV BAR ── */
+.bnav{position:fixed;bottom:0;left:0;right:0;z-index:999;
+  display:flex;align-items:center;height:64px;
+  background:#fff;border-top:2px solid var(--border);
+  box-shadow:0 -2px 16px rgba(0,0,0,.08);}
+.bnav a,.bnav button{
+  flex:1;height:100%;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:3px;
+  font-size:.62rem;font-weight:700;letter-spacing:.3px;text-transform:uppercase;
+  color:#94a3b8;text-decoration:none;background:none;border:none;
+  font-family:'Inter',sans-serif;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;transition:color .15s;}
+.bnav a:active,.bnav button:active{opacity:.7;}
+.bnav a.on,.bnav button.on{color:var(--accent);}
+.bnav a.out{color:#94a3b8;}
+.bnav a.out:hover{color:var(--danger);}
+.bnav-icon{font-size:1.4rem;line-height:1;position:relative;}
+.bnav-icon .bdot{position:absolute;top:-3px;right:-8px;
+  min-width:17px;height:17px;background:var(--danger);color:#fff;
+  font-size:.58rem;font-weight:800;border-radius:20px;
+  display:flex;align-items:center;justify-content:center;padding:0 3px;}
+
+/* ── SLIDE UP SHEET ── */
+.sov{display:none;position:fixed;inset:0;background:rgba(15,23,42,.4);z-index:1000;}
+.sov.on{display:block;}
+.sht{position:fixed;bottom:64px;left:0;right:0;z-index:1001;
+  background:#fff;border-radius:22px 22px 0 0;
+  box-shadow:0 -6px 30px rgba(0,0,0,.13);
+  transform:translateY(110%);
+  transition:transform .26s cubic-bezier(.32,1,.32,1);}
+.sht.on{transform:translateY(0);}
+.sht-bar{width:38px;height:4px;background:#cbd5e1;border-radius:2px;margin:14px auto 8px;}
+.sht-ttl{font-size:.68rem;font-weight:800;color:#94a3b8;text-transform:uppercase;
+  letter-spacing:.7px;padding:0 20px 10px;}
+.sht a{display:flex;align-items:center;gap:14px;padding:16px 22px;
+  font-size:.97rem;font-weight:600;color:var(--text2);text-decoration:none;
+  border-top:1.5px solid var(--border);-webkit-tap-highlight-color:transparent;}
+.sht a:active{background:#f8fafc;}
+.sht a.on{color:var(--accent);background:#eff6ff;}
+.sht-ico{font-size:1.25rem;width:30px;text-align:center;}
+.sht-lbl{flex:1;}
+.sht-arr{color:#94a3b8;font-size:.9rem;}
+.sht-pad{height:16px;}
 
 /* BUTTONS */
 .btn-sm{padding:6px 13px;border-radius:7px;font-size:.79rem;font-weight:600;cursor:pointer;border:none;
@@ -411,9 +457,9 @@ a{color:var(--accent);text-decoration:none;}
 .btn.inline{width:auto;display:inline-block;}
 
 /* LAYOUT */
-.container{max-width:500px;margin:0 auto;padding:28px 16px 56px;}
-.container.wide{max-width:740px;}
-.container.full{max-width:1000px;}
+.container{max-width:500px;margin:0 auto;padding:28px 16px 90px;}
+.container.wide{max-width:740px;padding-bottom:90px;}
+.container.full{max-width:1000px;padding-bottom:90px;}
 
 /* CARDS */
 .card{background:#fff;border:1.5px solid var(--border);border-radius:var(--r);padding:22px;box-shadow:var(--ss);}
@@ -618,40 +664,6 @@ input[type=file]{display:none;}
 .cv-modal-body .cv-no-preview p{color:var(--muted);font-size:.9rem;line-height:1.6;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
 .fade-in{animation:fadeIn .3s ease both;}
-
-/* ── MOBILE RESPONSIVE ── */
-@media(max-width:600px){
-    .container{padding:16px 12px 60px;}
-    .container.wide{max-width:100%;}
-    .container.full{max-width:100%;}
-    .stats-row{grid-template-columns:repeat(2,1fr);}
-    .row-2{grid-template-columns:1fr;}
-    .nav{padding:0 14px;height:54px;}
-    .nav-links{gap:0;}
-    .nav-link{padding:5px 8px;font-size:.75rem;}
-    .nav-user{display:none;}
-    .nav-sep{display:none;}
-    .card{padding:16px 14px;}
-    .modal{border-radius:16px 16px 0 0;padding:18px 16px 32px;}
-    .week-nav{gap:4px;}
-    .day-tab{min-width:52px;padding:8px 10px;}
-    .slot-item{padding:11px 12px;}
-    .slot-time{font-size:.86rem;}
-    .job-grid{grid-template-columns:1fr;}
-    .job-card{padding:15px 14px;}
-    .admin-tabs{gap:0;}
-    .admin-tab{padding:9px 11px;font-size:.78rem;}
-    .stat-num{font-size:1.6rem;}
-    .section-title{font-size:1rem;}
-    .btn{padding:12px;}
-    .tracker-label{font-size:.58rem;}
-    .cv-modal{border-radius:14px 14px 0 0;max-height:95vh;}
-    .booking-hist{padding:14px 13px;}
-    .c-card{padding:14px 13px;}
-    .access-row{padding:10px 13px;}
-    .btn-sm{padding:5px 11px;font-size:.77rem;}
-    .login-logo h1{font-size:1.8rem;}
-}
 </style>
 </head>
 <body>
@@ -661,20 +673,22 @@ input[type=file]{display:none;}
   <div class="nav-brand">Interview <span>Scheduler</span></div>
   <div class="nav-right">
     <?php if(!isAdmin()): ?>
-    <div class="nav-links">
-      <a href="?action=dashboard"   class="nav-link <?= in_array($action,['dashboard','book'])?'active':'' ?>">📅 Schedule</a>
-      <a href="?action=jobs"        class="nav-link <?= $action==='jobs'?'active':'' ?>">💼 Jobs</a>
-      <a href="?action=my_bookings" class="nav-link <?= $action==='my_bookings'?'active':'' ?>">📋 Applications</a>
-      <a href="?action=read_messages" class="nav-link <?= in_array($action,['messages','read_messages'])?'active':'' ?>">
-        ✉ Messages<?php if($unread): ?><span class="badge-red"><?= $unread ?></span><?php endif; ?>
-      </a>
+    <div class="nav-links" style="gap:6px;">
+      <button class="nav-back-btn" onclick="history.back()" title="Go back">&#8592;</button>
+      <span class="text-xs text-muted" style="font-weight:600;">
+        <?php if(in_array($action,['dashboard','book'])): ?>📅 Schedule
+        <?php elseif($action==='jobs'): ?>💼 Jobs
+        <?php elseif($action==='my_bookings'): ?>📋 Applications
+        <?php elseif(in_array($action,['messages','read_messages'])): ?>✉ Messages
+        <?php else: ?>Interview Scheduler<?php endif; ?>
+      </span>
     </div>
     <?php else: ?>
     <div class="nav-links"><a href="?action=admin" class="nav-link active">🛡 Admin Panel</a></div>
-    <?php endif; ?>
     <div class="nav-sep"></div>
-    <div class="nav-user"><strong><?= h($_SESSION['name']) ?></strong><?= isAdmin()?'🛡 Admin':'👤 Candidate' ?></div>
+    <div class="nav-user"><strong><?= h($_SESSION['name']) ?></strong>🛡 Admin</div>
     <a href="?action=logout" class="btn-sm ghost">Sign Out</a>
+    <?php endif; ?>
   </div>
 </nav>
 <?php endif; ?>
@@ -770,7 +784,10 @@ elseif($action==='dashboard'||$action==='book'):
       $isPast=($activeDay<$today)||($activeDay===$today&&$sl['end']<=$now);
       if($booking): ?>
       <div class="slot-item booked">
-        <div class="slot-time">🕙 <?= $sl['start'] ?> – <?= $sl['end'] ?></div>
+        <div>
+          <div class="slot-time">🕙 <?= $sl['start'] ?> – <?= $sl['end'] ?></div>
+          <div class="text-xs" style="margin-top:3px;color:var(--danger);font-weight:600;">🚫 This slot is booked by other candidate</div>
+        </div>
         <span class="slot-label taken">Booked</span>
       </div>
       <?php elseif($isPast): ?>
@@ -1282,6 +1299,38 @@ function closePreview() {
 document.addEventListener('keydown', function(e){ if(e.key==='Escape') closePreview(); });
 </script>
 
+
+<?php if(isLoggedIn() && !isAdmin()): ?>
+<!-- overlay -->
+<div class="sov" id="sov" onclick="cls()"></div>
+<!-- sheet -->
+<div class="sht" id="sht">
+  <div class="sht-bar"></div>
+  <div class="sht-ttl">Go to</div>
+  <a href="?action=dashboard"   class="<?= in_array($action,['dashboard','book'])?'on':'' ?>"><span class="sht-ico">📅</span><span class="sht-lbl">Schedule</span><span class="sht-arr">›</span></a>
+  <a href="?action=jobs"        class="<?= $action==='jobs'?'on':'' ?>"><span class="sht-ico">💼</span><span class="sht-lbl">Jobs</span><span class="sht-arr">›</span></a>
+  <a href="?action=my_bookings" class="<?= $action==='my_bookings'?'on':'' ?>"><span class="sht-ico">📋</span><span class="sht-lbl">Applications</span><span class="sht-arr">›</span></a>
+  <div class="sht-pad"></div>
+</div>
+<!-- bottom bar -->
+<nav class="bnav">
+  <button class="<?= in_array($action,['dashboard','book','jobs','my_bookings'])?'on':'' ?>" onclick="opn()">
+    <span class="bnav-icon">☰</span><span>Menu</span>
+  </button>
+  <a href="?action=read_messages" class="<?= in_array($action,['messages','read_messages'])?'on':'' ?>">
+    <span class="bnav-icon"><?php if($unread): ?><span class="bdot"><?= $unread ?></span><?php endif; ?>✉</span>
+    <span>Messages</span>
+  </a>
+  <a href="?action=logout" class="out" onclick="return confirm('Sign out?')">
+    <span class="bnav-icon">⏻</span><span>Sign Out</span>
+  </a>
+</nav>
+<script>
+function opn(){document.getElementById('sov').classList.add('on');document.getElementById('sht').classList.add('on');document.body.style.overflow='hidden';}
+function cls(){document.getElementById('sov').classList.remove('on');document.getElementById('sht').classList.remove('on');document.body.style.overflow='';}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')cls();});
+</script>
+<?php endif; ?>
 <?php endif; ?>
 </body>
 </html>
