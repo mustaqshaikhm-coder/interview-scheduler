@@ -10,7 +10,8 @@ $ADMIN_EMAILS = [
 ];
 
 // ─── DATABASE ────────────────────────────────────────────────────────────────
-$db = new SQLite3(__DIR__ . '/scheduler.db');
+$dataDir = (is_dir('/var/data') && is_writable('/var/data')) ? '/var/data' : __DIR__;
+$db = new SQLite3($dataDir . '/scheduler.db');
 $db->exec("PRAGMA journal_mode=WAL");
 
 $db->exec("CREATE TABLE IF NOT EXISTS users (
@@ -89,7 +90,7 @@ if ($db->querySingle("SELECT COUNT(*) FROM jobs") == 0) {
     }
 }
 
-$uploadDir = __DIR__ . '/uploads/cv/';
+$uploadDir = ((is_dir('/var/data') && is_writable('/var/data')) ? '/var/data' : __DIR__) . '/uploads/cv/';
 if (!is_dir($uploadDir)) @mkdir($uploadDir, 0755, true);
 
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
