@@ -372,7 +372,7 @@ a{color:var(--accent);text-decoration:none;}
 /* NAV */
 .nav{position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-content:space-between;
   padding:0 24px;height:58px;background:#fff;border-bottom:1.5px solid var(--border);box-shadow:var(--ss);}
-.nav-brand{font-family:'Syne',sans-serif;font-size:1.12rem;font-weight:800;color:var(--accent);letter-spacing:-.5px;}
+.nav-brand{font-family:'Syne',sans-serif;font-size:.85rem;font-weight:800;color:var(--accent);letter-spacing:-.3px;}
 .nav-brand span{color:var(--accent2);}
 .nav-right{display:flex;align-items:center;gap:6px;}
 .nav-links{display:flex;gap:2px;}
@@ -1301,6 +1301,8 @@ document.addEventListener('keydown', function(e){ if(e.key==='Escape') closePrev
 </script>
 
 
+<?php endif; ?>
+
 <?php if(isLoggedIn() && !isAdmin()): ?>
 <!-- overlay -->
 <div class="sov" id="sov" onclick="cls()"></div>
@@ -1331,7 +1333,6 @@ function opn(){document.getElementById('sov').classList.add('on');document.getEl
 function cls(){document.getElementById('sov').classList.remove('on');document.getElementById('sht').classList.remove('on');document.body.style.overflow='';}
 document.addEventListener('keydown',function(e){if(e.key==='Escape')cls();});
 </script>
-<?php endif; ?>
 <?php endif; ?>
 </body>
 </html>
