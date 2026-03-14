@@ -6,11 +6,11 @@ session_start();
 //     These users get admin role automatically on login.
 // ═══════════════════════════════════════════════════════════
 $ADMIN_EMAILS = [
-    'admin@yourdomain.com',   // ← replace with your own email(s)
+    'sarfaraf@gmail.com',   // ← replace with your own email(s)
 ];
 
 // ─── DATABASE ────────────────────────────────────────────────────────────────
-$dataDir = (is_dir('/var/data') && is_writable('/var/data')) ? '/var/data' : __DIR__;
+$dataDir=(is_dir('/var/data')&&is_writable('/var/data'))?'/var/data':__DIR__;
 $db = new SQLite3($dataDir . '/scheduler.db');
 $db->exec("PRAGMA journal_mode=WAL");
 
@@ -90,7 +90,7 @@ if ($db->querySingle("SELECT COUNT(*) FROM jobs") == 0) {
     }
 }
 
-$uploadDir = ((is_dir('/var/data') && is_writable('/var/data')) ? '/var/data' : __DIR__) . '/uploads/cv/';
+$uploadDir=((is_dir('/var/data')&&is_writable('/var/data'))?'/var/data':__DIR__).'/uploads/cv/';
 if (!is_dir($uploadDir)) @mkdir($uploadDir, 0755, true);
 
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
@@ -348,7 +348,9 @@ $unread=isLoggedIn()&&!isAdmin()?countUnread($db,$_SESSION['user_id']):0;
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <title>Interview Scheduler</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;1,14..32,400&family=Syne:wght@700;800&display=swap" rel="stylesheet">
@@ -372,7 +374,7 @@ a{color:var(--accent);text-decoration:none;}
 /* NAV */
 .nav{position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-content:space-between;
   padding:0 24px;height:58px;background:#fff;border-bottom:1.5px solid var(--border);box-shadow:var(--ss);}
-.nav-brand{font-family:'Syne',sans-serif;font-size:.85rem;font-weight:800;color:var(--accent);letter-spacing:-.3px;}
+.nav-brand{font-family:'Syne',sans-serif;font-size:1.12rem;font-weight:800;color:var(--accent);letter-spacing:-.5px;}
 .nav-brand span{color:var(--accent2);}
 .nav-right{display:flex;align-items:center;gap:6px;}
 .nav-links{display:flex;gap:2px;}
@@ -382,56 +384,13 @@ a{color:var(--accent);text-decoration:none;}
 .nav-sep{width:1px;height:22px;background:var(--border);margin:0 4px;}
 .nav-user{font-size:.79rem;color:var(--muted);text-align:right;line-height:1.3;}
 .nav-user strong{color:var(--text);font-size:.81rem;display:block;font-weight:700;}
+.nav-back-btn{width:32px;height:32px;border-radius:8px;border:1.5px solid var(--border);
+  background:#f1f5f9;color:var(--text2);font-size:1.1rem;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;
+  transition:all .15s;flex-shrink:0;line-height:1;font-family:sans-serif;}
+.nav-back-btn:active{background:#e2e8f0;color:var(--accent);}
 .badge-red{display:inline-flex;align-items:center;justify-content:center;min-width:17px;height:17px;
   background:var(--danger);color:#fff;font-size:.62rem;font-weight:800;border-radius:20px;padding:0 4px;margin-left:3px;}
-.nav-back-btn{width:32px;height:32px;border-radius:8px;border:1.5px solid var(--border);background:#f1f5f9;
-  color:var(--text2);font-size:1rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;
-  transition:all .15s;flex-shrink:0;line-height:1;}
-.nav-back-btn:hover{background:#e2e8f0;border-color:var(--border2);color:var(--accent);}
-
-/* ── BOTTOM NAV BAR ── */
-.bnav{position:fixed;bottom:0;left:0;right:0;z-index:999;
-  display:flex;align-items:center;height:64px;
-  background:#fff;border-top:2px solid var(--border);
-  box-shadow:0 -2px 16px rgba(0,0,0,.08);}
-.bnav a,.bnav button{
-  flex:1;height:100%;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;gap:3px;
-  font-size:.62rem;font-weight:700;letter-spacing:.3px;text-transform:uppercase;
-  color:#94a3b8;text-decoration:none;background:none;border:none;
-  font-family:'Inter',sans-serif;cursor:pointer;
-  -webkit-tap-highlight-color:transparent;transition:color .15s;}
-.bnav a:active,.bnav button:active{opacity:.7;}
-.bnav a.on,.bnav button.on{color:var(--accent);}
-.bnav a.out{color:#94a3b8;}
-.bnav a.out:hover{color:var(--danger);}
-.bnav-icon{font-size:1.4rem;line-height:1;position:relative;}
-.bnav-icon .bdot{position:absolute;top:-3px;right:-8px;
-  min-width:17px;height:17px;background:var(--danger);color:#fff;
-  font-size:.58rem;font-weight:800;border-radius:20px;
-  display:flex;align-items:center;justify-content:center;padding:0 3px;}
-
-/* ── SLIDE UP SHEET ── */
-.sov{display:none;position:fixed;inset:0;background:rgba(15,23,42,.4);z-index:1000;}
-.sov.on{display:block;}
-.sht{position:fixed;bottom:64px;left:0;right:0;z-index:1001;
-  background:#fff;border-radius:22px 22px 0 0;
-  box-shadow:0 -6px 30px rgba(0,0,0,.13);
-  transform:translateY(110%);
-  transition:transform .26s cubic-bezier(.32,1,.32,1);}
-.sht.on{transform:translateY(0);}
-.sht-bar{width:38px;height:4px;background:#cbd5e1;border-radius:2px;margin:14px auto 8px;}
-.sht-ttl{font-size:.68rem;font-weight:800;color:#94a3b8;text-transform:uppercase;
-  letter-spacing:.7px;padding:0 20px 10px;}
-.sht a{display:flex;align-items:center;gap:14px;padding:16px 22px;
-  font-size:.97rem;font-weight:600;color:var(--text2);text-decoration:none;
-  border-top:1.5px solid var(--border);-webkit-tap-highlight-color:transparent;}
-.sht a:active{background:#f8fafc;}
-.sht a.on{color:var(--accent);background:#eff6ff;}
-.sht-ico{font-size:1.25rem;width:30px;text-align:center;}
-.sht-lbl{flex:1;}
-.sht-arr{color:#94a3b8;font-size:.9rem;}
-.sht-pad{height:16px;}
 
 /* BUTTONS */
 .btn-sm{padding:6px 13px;border-radius:7px;font-size:.79rem;font-weight:600;cursor:pointer;border:none;
@@ -458,9 +417,9 @@ a{color:var(--accent);text-decoration:none;}
 .btn.inline{width:auto;display:inline-block;}
 
 /* LAYOUT */
-.container{max-width:500px;margin:0 auto;padding:28px 16px 90px;}
-.container.wide{max-width:740px;padding-bottom:90px;}
-.container.full{max-width:1000px;padding-bottom:90px;}
+.container{max-width:500px;margin:0 auto;padding:28px 16px 56px;}
+.container.wide{max-width:740px;}
+.container.full{max-width:1000px;}
 
 /* CARDS */
 .card{background:#fff;border:1.5px solid var(--border);border-radius:var(--r);padding:22px;box-shadow:var(--ss);}
@@ -663,20 +622,55 @@ input[type=file]{display:none;}
 .cv-modal-body .cv-no-preview{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 32px;text-align:center;gap:16px;min-height:320px;}
 .cv-modal-body .cv-no-preview .np-icon{font-size:3.2rem;opacity:.4;}
 .cv-modal-body .cv-no-preview p{color:var(--muted);font-size:.9rem;line-height:1.6;}
+/* bottom nav inline */
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
 .fade-in{animation:fadeIn .3s ease both;}
+
+/* ── MOBILE RESPONSIVE ── */
+@media(max-width:600px){
+    .container{padding:16px 12px 60px;}
+    .container.wide{max-width:100%;}
+    .container.full{max-width:100%;}
+    .stats-row{grid-template-columns:repeat(2,1fr);}
+    .row-2{grid-template-columns:1fr;}
+    .nav{padding:0 14px;height:54px;}
+    .nav-links{gap:0;}
+    .nav-link{padding:5px 8px;font-size:.75rem;}
+    .nav-user{display:none;}
+    .nav-sep{display:none;}
+    .card{padding:16px 14px;}
+    .modal{border-radius:16px 16px 0 0;padding:18px 16px 32px;}
+    .week-nav{gap:4px;}
+    .day-tab{min-width:52px;padding:8px 10px;}
+    .slot-item{padding:11px 12px;}
+    .slot-time{font-size:.86rem;}
+    .job-grid{grid-template-columns:1fr;}
+    .job-card{padding:15px 14px;}
+    .admin-tabs{gap:0;}
+    .admin-tab{padding:9px 11px;font-size:.78rem;}
+    .stat-num{font-size:1.6rem;}
+    .section-title{font-size:1rem;}
+    .btn{padding:12px;}
+    .tracker-label{font-size:.58rem;}
+    .cv-modal{border-radius:14px 14px 0 0;max-height:95vh;}
+    .booking-hist{padding:14px 13px;}
+    .c-card{padding:14px 13px;}
+    .access-row{padding:10px 13px;}
+    .btn-sm{padding:5px 11px;font-size:.77rem;}
+    .login-logo h1{font-size:1.8rem;}
+}
 </style>
 </head>
 <body>
 
 <?php if(isLoggedIn()): ?>
 <nav class="nav">
-  <div class="nav-brand">Interview <span>Scheduler</span></div>
+  <div class="nav-brand">IS</div>
   <div class="nav-right">
     <?php if(!isAdmin()): ?>
-    <div class="nav-links" style="gap:6px;">
-      <button class="nav-back-btn" onclick="history.back()" title="Go back">&#8592;</button>
-      <span class="text-xs text-muted" style="font-weight:600;">
+    <div style="display:flex;align-items:center;gap:8px;">
+      <button class="nav-back-btn" onclick="history.back()">&#8592;</button>
+      <span style="font-size:.82rem;font-weight:700;color:var(--text2);">
         <?php if(in_array($action,['dashboard','book'])): ?>📅 Schedule
         <?php elseif($action==='jobs'): ?>💼 Jobs
         <?php elseif($action==='my_bookings'): ?>📋 Applications
@@ -1300,39 +1294,81 @@ function closePreview() {
 document.addEventListener('keydown', function(e){ if(e.key==='Escape') closePreview(); });
 </script>
 
-
 <?php endif; ?>
 
 <?php if(isLoggedIn() && !isAdmin()): ?>
+
+<!-- ═══ BOTTOM NAV ═══ -->
+<style>
+#mn-ov{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.45);z-index:9998;}
+#mn-sh{position:fixed;bottom:66px;left:0;right:0;background:#ffffff;border-top-left-radius:20px;border-top-right-radius:20px;box-shadow:0 -4px 24px rgba(0,0,0,0.15);z-index:9999;transform:translateY(110%);transition:transform 0.28s ease;}
+#mn-bar{width:40px;height:5px;background:#cbd5e1;border-radius:3px;margin:14px auto 10px auto;}
+#mn-lbl{font-size:11px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;padding:0 20px 10px 20px;}
+.mn-item{display:flex;align-items:center;gap:16px;padding:17px 22px;font-size:16px;font-weight:600;color:#334155;text-decoration:none;border-top:1px solid #e2e8f0;}
+.mn-item-ico{font-size:22px;width:32px;text-align:center;}
+.mn-item-lbl{flex:1;}
+.mn-item-arr{color:#94a3b8;font-size:14px;}
+.mn-item.mn-on{color:#2563eb;background:#eff6ff;}
+#mn-pad{height:20px;}
+#btm-nav{position:fixed;bottom:0;left:0;right:0;height:66px;background:#ffffff;border-top:2px solid #e2e8f0;box-shadow:0 -2px 10px rgba(0,0,0,0.08);display:flex;align-items:stretch;z-index:9997;}
+.btm-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:none;border:none;cursor:pointer;color:#94a3b8;font-size:10px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;text-decoration:none;padding:8px 4px;font-family:sans-serif;-webkit-tap-highlight-color:transparent;}
+.btm-btn.btm-on{color:#2563eb;}
+.btm-btn-ico{font-size:22px;line-height:1;}
+.btm-unread{position:relative;display:inline-block;}
+.btm-dot{position:absolute;top:-4px;right:-10px;min-width:18px;height:18px;background:#dc2626;color:#fff;font-size:10px;font-weight:800;border-radius:20px;display:flex;align-items:center;justify-content:center;padding:0 4px;}
+body{padding-bottom:66px !important;}
+</style>
+
 <!-- overlay -->
-<div class="sov" id="sov" onclick="cls()"></div>
-<!-- sheet -->
-<div class="sht" id="sht">
-  <div class="sht-bar"></div>
-  <div class="sht-ttl">Go to</div>
-  <a href="?action=dashboard"   class="<?= in_array($action,['dashboard','book'])?'on':'' ?>"><span class="sht-ico">📅</span><span class="sht-lbl">Schedule</span><span class="sht-arr">›</span></a>
-  <a href="?action=jobs"        class="<?= $action==='jobs'?'on':'' ?>"><span class="sht-ico">💼</span><span class="sht-lbl">Jobs</span><span class="sht-arr">›</span></a>
-  <a href="?action=my_bookings" class="<?= $action==='my_bookings'?'on':'' ?>"><span class="sht-ico">📋</span><span class="sht-lbl">Applications</span><span class="sht-arr">›</span></a>
-  <div class="sht-pad"></div>
+<div id="mn-ov" onclick="mnClose()"></div>
+
+<!-- slide up sheet -->
+<div id="mn-sh">
+  <div id="mn-bar"></div>
+  <div id="mn-lbl">Navigate To</div>
+  <a href="?action=dashboard" class="mn-item <?= in_array($action,['dashboard','book'])?'mn-on':'' ?>">
+    <span class="mn-item-ico">📅</span><span class="mn-item-lbl">Schedule</span><span class="mn-item-arr">›</span>
+  </a>
+  <a href="?action=jobs" class="mn-item <?= $action==='jobs'?'mn-on':'' ?>">
+    <span class="mn-item-ico">💼</span><span class="mn-item-lbl">Jobs</span><span class="mn-item-arr">›</span>
+  </a>
+  <a href="?action=my_bookings" class="mn-item <?= $action==='my_bookings'?'mn-on':'' ?>">
+    <span class="mn-item-ico">📋</span><span class="mn-item-lbl">Applications</span><span class="mn-item-arr">›</span>
+  </a>
+  <div id="mn-pad"></div>
 </div>
+
 <!-- bottom bar -->
-<nav class="bnav">
-  <button class="<?= in_array($action,['dashboard','book','jobs','my_bookings'])?'on':'' ?>" onclick="opn()">
-    <span class="bnav-icon">☰</span><span>Menu</span>
+<div id="btm-nav">
+  <button class="btm-btn <?= in_array($action,['dashboard','book','jobs','my_bookings'])?'btm-on':'' ?>" onclick="mnOpen()">
+    <span class="btm-btn-ico">☰</span>
+    <span>Menu</span>
   </button>
-  <a href="?action=read_messages" class="<?= in_array($action,['messages','read_messages'])?'on':'' ?>">
-    <span class="bnav-icon"><?php if($unread): ?><span class="bdot"><?= $unread ?></span><?php endif; ?>✉</span>
+  <a href="?action=read_messages" class="btm-btn <?= in_array($action,['messages','read_messages'])?'btm-on':'' ?>">
+    <span class="btm-btn-ico btm-unread">
+      ✉<?php if($unread): ?><span class="btm-dot"><?= $unread ?></span><?php endif; ?>
+    </span>
     <span>Messages</span>
   </a>
-  <a href="?action=logout" class="out" onclick="return confirm('Sign out?')">
-    <span class="bnav-icon">⏻</span><span>Sign Out</span>
+  <a href="?action=logout" class="btm-btn" style="color:#94a3b8;" onclick="return confirm('Sign out?')">
+    <span class="btm-btn-ico">⏻</span>
+    <span>Sign Out</span>
   </a>
-</nav>
+</div>
+
 <script>
-function opn(){document.getElementById('sov').classList.add('on');document.getElementById('sht').classList.add('on');document.body.style.overflow='hidden';}
-function cls(){document.getElementById('sov').classList.remove('on');document.getElementById('sht').classList.remove('on');document.body.style.overflow='';}
-document.addEventListener('keydown',function(e){if(e.key==='Escape')cls();});
+function mnOpen(){
+  document.getElementById('mn-ov').style.display='block';
+  document.getElementById('mn-sh').style.transform='translateY(0)';
+  document.body.style.overflow='hidden';
+}
+function mnClose(){
+  document.getElementById('mn-ov').style.display='none';
+  document.getElementById('mn-sh').style.transform='translateY(110%)';
+  document.body.style.overflow='';
+}
 </script>
+
 <?php endif; ?>
 </body>
 </html>
